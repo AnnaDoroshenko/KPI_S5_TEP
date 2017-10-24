@@ -40,15 +40,6 @@ public class Lab02 extends Application {
     final int nn = n + 5 ;
 
     public static void main(String[] args) {
-//        Model m = new Model(0.99);
-//        for (double[] ys : m.getAllYs()) {
-//            for (double y : ys) {
-//                System.out.print(y + " ");
-//            }
-//            System.out.println();
-//        }
-//
-
         launch(args);
     }
 
@@ -148,8 +139,6 @@ public class Lab02 extends Application {
 
         ObservableList<Map> allData = FXCollections.observableArrayList();
 
-//        String[] values = new String[n];
-
         Model model = new Model(0.99);
         double[] m = model.getYm();
         final double [] x1 = model.getX1();
@@ -167,10 +156,7 @@ public class Lab02 extends Application {
             String x1nValue = String.format("%.3f", x1n[i]);
             String x2nValue = String.format("%.3f", x2n[i]);
             String ymValue = String.format("%.3f", m[i]);
-//            for (int k = 0; k < n; k++) {
-//                values[k] = " ";
-//            }
-//
+
             dataRow.put(MapKeys[0], x1Value);
             dataRow.put(MapKeys[1], x2Value);
             dataRow.put(MapKeys[2], x1nValue);

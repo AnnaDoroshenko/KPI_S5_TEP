@@ -7,17 +7,17 @@ public class Experiment {
     private final double[] XS_MIN = {-5, -35, -35};
     private final double[] XS_MAX = {15, 10, -10};
 
-    private final double X_AVERAGE_MAX = (XS_MAX[0] + XS_MAX[0] + XS_MAX[0]) / 3;
-    private final double X_AVERAGE_MIN = (XS_MIN[0] + XS_MIN[0] + XS_MIN[0]) / 3;
+    private final double X_AVERAGE_MAX = (XS_MAX[0] + XS_MAX[1] + XS_MAX[2]) / 3;
+    private final double X_AVERAGE_MIN = (XS_MIN[0] + XS_MIN[1] + XS_MIN[2]) / 3;
 
-    private final double[] x0n = {1, 1, 1};
-    private final double[] x1n = {-1, 1, 1};
-    private final double[] x2n = {1, -1, 1};
-    private final double[] x3n = {1, 1, -1};
-    //    private final double[] x0 = {XS_MAX[0], XS_MAX[0], XS_MAX[0]};
-    private final double[] x1 = {XS_MIN[0], XS_MAX[0], XS_MAX[0]};
-    private final double[] x2 = {XS_MAX[1], XS_MIN[1], XS_MAX[1]};
-    private final double[] x3 = {XS_MAX[2], XS_MAX[2], XS_MIN[2]};
+    private final double[] x0n = {1, 1, 1, 1};
+    private final double[] x1n = {-1, -1, 1, 1};
+    private final double[] x2n = {-1, 1, -1, 1};
+    private final double[] x3n = {-1, 1, 1, -1};
+    private final double[] x0 = {1, 1, 1, 1};
+    private final double[] x1 = {XS_MIN[0], XS_MAX[0], XS_MAX[0], XS_MAX[0]};
+    private final double[] x2 = {XS_MIN[1], XS_MAX[1], XS_MIN[1], XS_MAX[1]};
+    private final double[] x3 = {XS_MIN[2], XS_MAX[2], XS_MAX[2], XS_MIN[2]};
 
     private final double Y_MAX = 200 + X_AVERAGE_MAX;
     private final double Y_MIN = 200 + X_AVERAGE_MIN;
