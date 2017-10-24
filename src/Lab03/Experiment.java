@@ -23,6 +23,9 @@ public class Experiment {
     private final double Y_MIN = 200 + X_AVERAGE_MIN;
 
     private final double REQUIRED_PROBABILITY;
+    private final double Q = 1 - REQUIRED_PROBABILITY;
+
+    final double INFINITY= Double.POSITIVE_INFINITY;
 
     private final int N = 4;
 
@@ -39,9 +42,9 @@ public class Experiment {
         matrix = new ArrayList<>();
         random = new Random();
 
-        generateRomanovCriticalRs();
+        generateCohranCoeffGs();
 
-        doStuff();
+        //doStuff();
     }
 
     private void generateNewSample() {
@@ -63,18 +66,19 @@ public class Experiment {
 
     //----------------------------------------------------------------------------------
 
-    private static Map<Double, Map<Double, Integer>> cochranCoeffGs = null;
+    private static Map<Integer, Map<Double, Integer>> cochranCoeffGs = null;
 
     // TODO: zip?
-    private static void generateCohranCoeffGs() {
+    private void generateCohranCoeffGs() {
         if (cochranCoeffGs != null) {
             return;
         }
 
-        final double infinity = Double.POSITIVE_INFINITY;
+//        final double Q = 1 - REQUIRED_PROBABILITY;
+        Integer[][] values = new Integer[16][13];
 
-        final Double[] qs = {0.05, 0.01};
-        final Double[] f1s = {1.0d, 2.0d, 3.0d, 4.0d, 5.0d, 6.0d, 7.0d, 8.0d, 9.0d, 10.0d, 16.0d, 36.0d, 144.0d, infinity};
+//        final Double[] qs = {0.05, 0.01};
+        final Double[] f1s = {1.0d, 2.0d, 3.0d, 4.0d, 5.0d, 6.0d, 7.0d, 8.0d, 9.0d, 10.0d, 16.0d, 36.0d, 144.0d, INFINITY};
         final Integer[] f2s = {2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 24, 30, 40, 60, 120};
 
         final Integer[][] valuesQ5 = {
@@ -116,6 +120,13 @@ public class Experiment {
                 {1252, 759, 585, 489, 429, 387, 357, 334, 316, 302, 242, 178, 125, 83}
         };
 
+        if (Q == 0.05){
+            values = valuesQ5;
+        } else if (Q == 0.01){
+            values = valuesQ1;
+        } else {
+            //get the closest Q
+        }
         int indexF2 = 0;
         cochranCoeffGs = new HashMap<>();
         for (Integer f2 : f2s) {
@@ -129,6 +140,44 @@ public class Experiment {
 
             cochranCoeffGs.put(f2, map);
             indexF2++;
+        }
+    }
+
+    //----------------------------------------------------------------------------------
+
+    private static Map<Double, Map<Double, Double>> studentCoeffTs = null;
+
+    // TODO: zip?
+    private void generateStudentCoeffTs() {
+        if (studentCoeffTs != null) {
+            return;
+        }
+
+        final Double[] f3s = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0,
+                13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0,
+                26.0, 27.0, 28.0, 29.0, 30.0, INFINITY};
+        final Double[] qs = {0.05, 0.01};
+        final Double[][] values = { {12.70, 63.70}, {4.30, 9.92}, {3.18, 5.84}, {2.78, 4.60},
+                {2.57, 4.03}, {2.45, 3.71}, {2.36, 3.50}, {2.31, 3.36}, {2.26, 3.25}, {2.23, 3.17},
+                {2.20, 3.11}, {2.18, 3.05}, {2.16, 3.01}, {2.14, 2.98}, {2.13, 2.95}, {2.12, 2.92},
+                {2.11, 2.90}, {2.10, 2.88}, {2.09, 2.86}, {2.09, 2.85}, {2.08, 2.83}, {2.07, 2.82},
+                {2.07, 2.81}, {2.06, 2.80}, {2.06, 2.79}, {2.06, 2.78}, {2.05, 2.77}, {2.05, 2.76},
+                {2.05, 2.76}, {2.04, 2.75}, {2.02, 2.70}, {2.00, 2.66}, {1.98, 2.62}, {1.96, 2.58}
+        };
+
+        int indexF3 = 0;
+        studentCoeffTs = new HashMap<>();
+        for (Double f3 : f3s) {
+            int indexQ = 0;
+            final Map<Double, Double> map = new HashMap<>();
+            for (Double q : qs) {
+                map.put(q, values[indexF3][indexQ]);
+
+                indexF3++;
+            }
+
+            studentCoeffTs.put(f3, map);
+            indexF3++;
         }
     }
 }
