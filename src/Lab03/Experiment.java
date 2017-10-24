@@ -23,7 +23,6 @@ public class Experiment {
     private final double Y_MIN = 200 + X_AVERAGE_MIN;
 
     private final double REQUIRED_PROBABILITY;
-    private final double Q = 1 - REQUIRED_PROBABILITY;
 
     final double INFINITY= Double.POSITIVE_INFINITY;
 
@@ -74,11 +73,11 @@ public class Experiment {
             return;
         }
 
-//        final double Q = 1 - REQUIRED_PROBABILITY;
+        final double Q = 1 - REQUIRED_PROBABILITY;
         Integer[][] values = new Integer[16][13];
 
 //        final Double[] qs = {0.05, 0.01};
-        final Double[] f1s = {1.0d, 2.0d, 3.0d, 4.0d, 5.0d, 6.0d, 7.0d, 8.0d, 9.0d, 10.0d, 16.0d, 36.0d, 144.0d, INFINITY};
+        final Double[] f1s = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 16.0, 36.0, 144.0, INFINITY};
         final Integer[] f2s = {2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 24, 30, 40, 60, 120};
 
         final Integer[][] valuesQ5 = {
@@ -177,6 +176,71 @@ public class Experiment {
             }
 
             studentCoeffTs.put(f3, map);
+            indexF3++;
+        }
+    }
+
+    //----------------------------------------------------------------------------------
+
+    private static Map<Double, Map<Double, Double>> fisherCoeffFs = null;
+
+    // TODO: zip?
+    private void generateFisherCoeffFs() {
+        if (fisherCoeffFs != null) {
+            return;
+        }
+
+        final double Q = 1 - REQUIRED_PROBABILITY;
+
+        Double[][] values = new Double[16][13];
+
+        final Double[] f3s = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0,
+                15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 22.0, 24.0, 26.0, 28.0, 30.0, 40.0, 60.0, 120.0, INFINITY};
+        final Double[] f4s = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 12.0, 24.0, INFINITY};
+
+        final Double[][] valuesQ5 = {
+                {164.4, 199.5, 215.7, 224.6, 230.2, 234.0, 244.9, 249.0, 254.3},
+                {18.5, 19.2, 19.2, 19.3, 19.3, 19.3, 19.4, 19.4, 19.5},
+                {10.1, 9.6, 9.3, 9.1, 9.0, 8.9, 8.7, 8.6, 8.5},
+                {7.7, 6.9, 6.6, 6.4, 6.3, 6.2, 5.9, 5.8, 5.6},
+                {6.6, 5.8, 5.4, 5.2, 5.1, 5.0, 4.7, 4.5, 4.4},
+                {6.0, 5.1, 4.8, 4.5, 4.4, 4.3, 4.0, 3.8, 3.7},
+                {5.5, 4.7, 4.4, 4.1, 4.0, 3.9, 3.6, 3.4, 3.2},
+                {5.3, 4.5, 4.1, 3.8, 3.7, 3.6, 3.3, 3.1, 2.9},
+                {5.1, 4.3, 3.9, 3.6, 3.5, 3.4, 3.1, 2.9, 2.7},
+                {5.0, 4.1, 3.7, 3.5, 3.3, 3.2, 2.9, 2.7, 2.5},
+                {4.8, 4.0, 3.6, 3.4, 3.2, 3.1, 2.8, 2.6, 2.4},
+                {4.8, 3.9, 3.5, 3.3, 3.1, 3.0, 2.7, 2.5, 2.3},
+                {4.7, 3.8, 3.4, 3.2, 3.0, 2.9, 2.6, 2.4, 2.2},
+                {4.6, 3.7, 3.3, 3.1, 3.0, 2.9, 2.5, 2.3, 2.1},
+                {4.5, 3.7, 3.3, 3.1, 2.9, 2.8, 2.5, 2.3, 2.1},
+                {4.5, 3.6, 3.2, 3.0, 2.9, 2.7, 2.4, 2.2, 2.0},
+                //need to be finished
+        };
+
+        final Double[][] valuesQ1 = {
+                //need to be done
+        };
+
+        if (Q == 0.05){
+            values = valuesQ5;
+        } else if (Q == 0.01){
+            values = valuesQ1;
+        } else {
+            //get the closest Q
+        }
+        int indexF3 = 0;
+        fisherCoeffFs = new HashMap<>();
+        for (Double f3 : f3s) {
+            int indexF4 = 0;
+            final Map<Double, Double> map = new HashMap<>();
+            for (Double f4 : f4s) {
+                map.put(f4, values[indexF3][indexF4]);
+
+                indexF4++;
+            }
+
+            fisherCoeffFs.put(f3, map);
             indexF3++;
         }
     }
