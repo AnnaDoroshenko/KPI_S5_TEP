@@ -40,7 +40,13 @@ public class Experiment {
 
     private final int N = 4;
 
-    // [m][N]
+    // {
+    //   (1): [1..m]
+    //   (2): [1..m]
+    //   (3): [1..m]
+    //   (N): [1..m]
+    // }
+    // [m][N] === [column][row]
     private List<double[]> matrix;
 
     private static Random random = null;
@@ -67,6 +73,105 @@ public class Experiment {
 
     }
 
+    private boolean satisfiesCohranCriteria(int m) {
+        final double[][] ysForExperiments = getYsForExperiments();
+
+        // Step 1-2
+        double[] yAverages = calculateAverages(ysForExperiments);
+
+        // Step 3
+        double[] dispersions = calculateDispersions(ysForExperiments, yAverages);
+
+        // Step 4
+        final double maxDispersion = max(dispersions);
+
+        // Step 5
+        final double Gp = maxDispersion / sum(dispersions);
+
+        // Step 6
+        final int f1 = m - 1;
+        final int f2 = N;
+
+        // Step 7
+        final double q = 1 - REQUIRED_PROBABILITY;
+
+        // Step 8
+        final double Gt = getCohranCoeff(f1, f2);
+    }
+
+
+
+    private double calculateAverage(double[] array) {
+        double average = 0.0;
+
+        for (double value : array) {
+            average += value;
+        }
+        average /= array.length;
+
+        return average;
+    }
+
+    private double[] calculateAverages(double[][] arrays) {
+        final int size = arrays.length;
+        double[] averages = new double[size];
+
+        for (int i = 0; i < size; i++) {
+            averages[i] = calculateAverage(arrays[i]);
+        }
+
+        return averages;
+    }
+
+    private double calculateDispersion(double[] array, double average) {
+        double dispersion = 0.0;
+
+        for (double value : array) {
+            final double dValue = (average - value);
+            dispersion += dValue * dValue;
+        }
+        dispersion /= array.length; // (length - 1) ??!!
+
+        return dispersion;
+    }
+
+    private double calculateDispersion(double[] array) {
+        final double average = calculateAverage(array);
+        return calculateDispersion(array, average);
+    }
+
+    private double[] calculateDispersions(double[][] arrays, double[] averages) {
+        final int size = arrays.length;
+        double[] dispersions = new double[size];
+
+        for (int i = 0; i < size; i++) {
+            dispersions[i] = calculateDispersion(arrays[i], averages[i]);
+        }
+
+        return dispersions;
+    }
+
+    private double max(double[] array) {
+        double max = array[0];
+
+        for (double elem : array) {
+            if (elem > max) {
+                max = elem;
+            }
+        }
+
+        return max;
+    }
+
+    private double sum(double[] array) {
+        double sum = 0.0;
+
+        for (double elem : array) {
+            sum += elem;
+        }
+
+        return sum;
+    }
 
 
     private void generateNewSample() {
@@ -86,17 +191,60 @@ public class Experiment {
         return (boundMax - boundMin) * random.nextDouble() + boundMin;
     }
 
+
+    //----------------------------------------------------------------------------------
+
+    // [experiment]
+    public double[] getYsForSample(int sample) {
+        return matrix.get(sample);
+    }
+
+    // [sample][experiment]
+    public double[][] getYsForSamples() {
+        return matrix.toArray(new double[0][]);
+    }
+
+    // [sample]
+    public double[] getYsForExperiment(int experiment) {
+        double[] ys = new double[matrix.size()];
+
+        int index = 0;
+        for (double[] sample : matrix) {
+            ys[index++] = sample[experiment];
+        }
+
+        return ys;
+    }
+
+    public double[][] getYsForExperiments() {
+        double[][] ys = new double[N][];
+
+        for (int indexOfExperiment = 0; indexOfExperiment < N; indexOfExperiment++) {
+            ys[indexOfExperiment] = getYsForExperiment(indexOfExperiment);
+        }
+
+        return ys;
+    }
+
+
+
+
+
     //----------------------------------------------------------------------------------
 
     private static Map<Integer, Map<Double, Integer>> cochranCoeffGs = null;
 
+    private int getCohranCoeff(int f1, int f2) {
+        return cochranCoeffGs.get(f1).get(1.0 * f2);
+    }
+
     // TODO: zip?
-    private static void generateCohranCoeffGs(double requiredProbability) {
+    private static void generateCohranCoeffGs(double q) {
         if (cochranCoeffGs != null) {
             return;
         }
 
-        final double Q = 1 - requiredProbability;
+//        final double q = 1 - requiredProbability;
         Integer[][] values = new Integer[16][13];
 
 //        final Double[] qs = {0.05, 0.01};
@@ -142,12 +290,12 @@ public class Experiment {
                 {1252, 759, 585, 489, 429, 387, 357, 334, 316, 302, 242, 178, 125, 83}
         };
 
-        if (Q == 0.05) {
+        if (q == 0.05) {
             values = valuesQ5;
-        } else if (Q == 0.01) {
+        } else if (q == 0.01) {
             values = valuesQ1;
         } else {
-            //get the closest Q
+            //get the closest q
         }
 
         int indexF2 = 0;
