@@ -1,6 +1,5 @@
 package Lab02;
 
-import com.sun.org.apache.regexp.internal.RE;
 import javafx.util.Pair;
 
 import java.util.*;
