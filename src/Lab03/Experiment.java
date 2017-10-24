@@ -94,6 +94,14 @@ public class Experiment {
 
         // Step 8
         final double Gt = getCohranCoeff(f1, f2);
+
+
+        return Gp < Gt;
+    }
+
+    private boolean satisfiesStudentCriteria(int m) {
+        double averageDispersion = calculateAverage(calculateDispersions(getYsForExperiments()));
+        double[] dispersions = get
     }
 
 
@@ -143,6 +151,18 @@ public class Experiment {
 
         for (int i = 0; i < size; i++) {
             dispersions[i] = calculateDispersion(arrays[i], averages[i]);
+        }
+
+        return dispersions;
+    }
+
+    private double[] calculateDispersions(double[][] arrays) {
+        final int size = arrays.length;
+        double[] dispersions = new double[size];
+
+        for (int i = 0; i < size; i++) {
+            final double average = calculateAverage(arrays[i]);
+            dispersions[i] = calculateDispersion(arrays[i], average);
         }
 
         return dispersions;
@@ -227,6 +247,10 @@ public class Experiment {
     // amount of samples
     public int getM() {
         return matrix.size();
+    }
+
+    public double[] getAverageYsForExperiments() {
+        return calculateAverages(getYsForExperiments());
     }
 
     public double getRequiredProbability() {
