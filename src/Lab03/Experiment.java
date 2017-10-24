@@ -15,9 +15,6 @@ public class Experiment {
     private final double[] x2n = {1, -1, 1};
     private final double[] x3n = {1, 1, -1};
     //    private final double[] x0 = {XS_MAX[0], XS_MAX[0], XS_MAX[0]};
-//    private final double[] x1 = {XS_MIN[0], XS_MAX[0], XS_MAX[0]};
-//    private final double[] x2 = {XS_MAX[1], XS_MIN[1], XS_MAX[1]};
-//    private final double[] x3 = {XS_MAX[2], XS_MAX[2], XS_MIN[2]};
     private final double[] x1 = {
             x1n[0] == 1 ? XS_MAX[0] : XS_MIN[0],
             x1n[1] == 1 ? XS_MAX[0] : XS_MIN[0],
@@ -216,6 +213,7 @@ public class Experiment {
         return ys;
     }
 
+    // [experiment][sample]
     public double[][] getYsForExperiments() {
         double[][] ys = new double[N][];
 
@@ -224,6 +222,15 @@ public class Experiment {
         }
 
         return ys;
+    }
+
+    // amount of samples
+    public int getM() {
+        return matrix.size();
+    }
+
+    public double getRequiredProbability() {
+        return REQUIRED_PROBABILITY;
     }
 
 
