@@ -312,6 +312,34 @@ public class Experiment {
         return REQUIRED_PROBABILITY;
     }
 
+    public double[] getX1() {
+        return x1;
+    }
+
+    public double[] getX2() {
+        return x2;
+    }
+
+    public double[] getX3() {
+        return x3;
+    }
+
+    public double[] getX0n() {
+        return x0n;
+    }
+
+    public double[] getX1n() {
+        return x1n;
+    }
+
+    public double[] getX2n() {
+        return x2n;
+    }
+
+    public double[] getX3n() {
+        return x3n;
+    }
+
 
     //----------------------------------------------------------------------------------
 
