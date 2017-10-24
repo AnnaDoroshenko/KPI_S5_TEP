@@ -4,47 +4,70 @@ import java.util.*;
 
 public class Experiment {
 
-    private final double[] XS_MIN = {-5, -35, -35};
-    private final double[] XS_MAX = {15, 10, -10};
+    private final double[] XS_MIN = {-5, -35, -35}; // x1, x2, x3
+    private final double[] XS_MAX = {15, 10, -10}; // x1, x2, x3
 
-    private final double X_AVERAGE_MAX = (XS_MAX[0] + XS_MAX[0] + XS_MAX[0]) / 3;
-    private final double X_AVERAGE_MIN = (XS_MIN[0] + XS_MIN[0] + XS_MIN[0]) / 3;
+    private final double X_MIN_AVERAGE = (XS_MIN[0] + XS_MIN[1] + XS_MIN[2]) / 3.0;
+    private final double X_MAX_AVERAGE = (XS_MAX[0] + XS_MAX[1] + XS_MAX[2]) / 3.0;
 
     private final double[] x0n = {1, 1, 1};
     private final double[] x1n = {-1, 1, 1};
     private final double[] x2n = {1, -1, 1};
     private final double[] x3n = {1, 1, -1};
     //    private final double[] x0 = {XS_MAX[0], XS_MAX[0], XS_MAX[0]};
-    private final double[] x1 = {XS_MIN[0], XS_MAX[0], XS_MAX[0]};
-    private final double[] x2 = {XS_MAX[1], XS_MIN[1], XS_MAX[1]};
-    private final double[] x3 = {XS_MAX[2], XS_MAX[2], XS_MIN[2]};
+//    private final double[] x1 = {XS_MIN[0], XS_MAX[0], XS_MAX[0]};
+//    private final double[] x2 = {XS_MAX[1], XS_MIN[1], XS_MAX[1]};
+//    private final double[] x3 = {XS_MAX[2], XS_MAX[2], XS_MIN[2]};
+    private final double[] x1 = {
+            x1n[0] == 1 ? XS_MAX[0] : XS_MIN[0],
+            x1n[1] == 1 ? XS_MAX[0] : XS_MIN[0],
+            x1n[2] == 1 ? XS_MAX[0] : XS_MIN[0]};
+    private final double[] x2 = {
+            x2n[0] == 1 ? XS_MAX[1] : XS_MIN[1],
+            x2n[1] == 1 ? XS_MAX[1] : XS_MIN[1],
+            x2n[2] == 1 ? XS_MAX[1] : XS_MIN[1]};
+    private final double[] x3 = {
+            x3n[0] == 1 ? XS_MAX[2] : XS_MIN[2],
+            x3n[1] == 1 ? XS_MAX[2] : XS_MIN[2],
+            x3n[2] == 1 ? XS_MAX[2] : XS_MIN[2]};
 
-    private final double Y_MAX = 200 + X_AVERAGE_MAX;
-    private final double Y_MIN = 200 + X_AVERAGE_MIN;
+    private final double Y_MIN = 200 + X_MIN_AVERAGE;
+    private final double Y_MAX = 200 + X_MAX_AVERAGE;
 
     private final double REQUIRED_PROBABILITY;
 
-    final double INFINITY= Double.POSITIVE_INFINITY;
+    private static final double INFINITY = Double.POSITIVE_INFINITY;
 
     private final int N = 4;
 
     // [m][N]
     private List<double[]> matrix;
 
-    private static Random random;
+    private static Random random = null;
 
     private double[] normalizedRegressionCoeffs;
     private double[] naturalizedRegressionCoeffs;
 
     public Experiment(double requiredProbability) {
         this.REQUIRED_PROBABILITY = requiredProbability;
+
         matrix = new ArrayList<>();
-        random = new Random();
+        if (random == null) {
+            random = new Random();
+        }
 
-        generateCohranCoeffGs();
+        generateCohranCoeffGs(REQUIRED_PROBABILITY);
+        generateStudentCoeffTs();
+        generateFisherCoeffFs(REQUIRED_PROBABILITY);
 
-        //doStuff();
+        doStuff();
     }
+
+    private void doStuff() {
+
+    }
+
+
 
     private void generateNewSample() {
         matrix.add(generateRandomArray(N, Y_MIN, Y_MAX));
@@ -68,12 +91,12 @@ public class Experiment {
     private static Map<Integer, Map<Double, Integer>> cochranCoeffGs = null;
 
     // TODO: zip?
-    private void generateCohranCoeffGs() {
+    private static void generateCohranCoeffGs(double requiredProbability) {
         if (cochranCoeffGs != null) {
             return;
         }
 
-        final double Q = 1 - REQUIRED_PROBABILITY;
+        final double Q = 1 - requiredProbability;
         Integer[][] values = new Integer[16][13];
 
 //        final Double[] qs = {0.05, 0.01};
@@ -119,13 +142,14 @@ public class Experiment {
                 {1252, 759, 585, 489, 429, 387, 357, 334, 316, 302, 242, 178, 125, 83}
         };
 
-        if (Q == 0.05){
+        if (Q == 0.05) {
             values = valuesQ5;
-        } else if (Q == 0.01){
+        } else if (Q == 0.01) {
             values = valuesQ1;
         } else {
             //get the closest Q
         }
+
         int indexF2 = 0;
         cochranCoeffGs = new HashMap<>();
         for (Integer f2 : f2s) {
@@ -147,7 +171,7 @@ public class Experiment {
     private static Map<Double, Map<Double, Double>> studentCoeffTs = null;
 
     // TODO: zip?
-    private void generateStudentCoeffTs() {
+    private static void generateStudentCoeffTs() {
         if (studentCoeffTs != null) {
             return;
         }
@@ -156,7 +180,7 @@ public class Experiment {
                 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0,
                 26.0, 27.0, 28.0, 29.0, 30.0, INFINITY};
         final Double[] qs = {0.05, 0.01};
-        final Double[][] values = { {12.70, 63.70}, {4.30, 9.92}, {3.18, 5.84}, {2.78, 4.60},
+        final Double[][] values = {{12.70, 63.70}, {4.30, 9.92}, {3.18, 5.84}, {2.78, 4.60},
                 {2.57, 4.03}, {2.45, 3.71}, {2.36, 3.50}, {2.31, 3.36}, {2.26, 3.25}, {2.23, 3.17},
                 {2.20, 3.11}, {2.18, 3.05}, {2.16, 3.01}, {2.14, 2.98}, {2.13, 2.95}, {2.12, 2.92},
                 {2.11, 2.90}, {2.10, 2.88}, {2.09, 2.86}, {2.09, 2.85}, {2.08, 2.83}, {2.07, 2.82},
@@ -185,12 +209,12 @@ public class Experiment {
     private static Map<Double, Map<Double, Double>> fisherCoeffFs = null;
 
     // TODO: zip?
-    private void generateFisherCoeffFs() {
+    private static void generateFisherCoeffFs(double requiredProbability) {
         if (fisherCoeffFs != null) {
             return;
         }
 
-        final double Q = 1 - REQUIRED_PROBABILITY;
+        final double Q = 1 - requiredProbability;
 
         Double[][] values = new Double[16][13];
 
@@ -215,20 +239,21 @@ public class Experiment {
                 {4.6, 3.7, 3.3, 3.1, 3.0, 2.9, 2.5, 2.3, 2.1},
                 {4.5, 3.7, 3.3, 3.1, 2.9, 2.8, 2.5, 2.3, 2.1},
                 {4.5, 3.6, 3.2, 3.0, 2.9, 2.7, 2.4, 2.2, 2.0},
-                //need to be finished
+                //needs to be finished
         };
 
         final Double[][] valuesQ1 = {
-                //need to be done
+                //needs to be done
         };
 
-        if (Q == 0.05){
+        if (Q == 0.05) {
             values = valuesQ5;
-        } else if (Q == 0.01){
+        } else if (Q == 0.01) {
             values = valuesQ1;
         } else {
             //get the closest Q
         }
+
         int indexF3 = 0;
         fisherCoeffFs = new HashMap<>();
         for (Double f3 : f3s) {
