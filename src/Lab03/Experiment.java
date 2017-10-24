@@ -121,14 +121,14 @@ public class Experiment {
         for (Integer f2 : f2s) {
             int indexF1 = 0;
             final Map<Double, Integer> map = new HashMap<>();
-            for (Double g : f1s) {
-                map.put(g, values[indexF2][indexF1]);
+            for (Double f1 : f1s) {
+                map.put(f1, values[indexF2][indexF1]);
 
-                indexM++;
+                indexF1++;
             }
 
-            cochranCoeffGs.put(p, map);
-            indexP++;
+            cochranCoeffGs.put(f2, map);
+            indexF2++;
         }
     }
 }
