@@ -10,23 +10,29 @@ public class Experiment {
     private final double X_MIN_AVERAGE = (XS_MIN[0] + XS_MIN[1] + XS_MIN[2]) / 3.0;
     private final double X_MAX_AVERAGE = (XS_MAX[0] + XS_MAX[1] + XS_MAX[2]) / 3.0;
 
-    private final double[] x0n = {1, 1, 1};
-    private final double[] x1n = {-1, 1, 1};
-    private final double[] x2n = {1, -1, 1};
-    private final double[] x3n = {1, 1, -1};
-    //    private final double[] x0 = {XS_MAX[0], XS_MAX[0], XS_MAX[0]};
+    private final double[] x0n = {+1, +1, +1, +1};
+    private final double[] x1n = {-1, -1, +1, +1};
+    private final double[] x2n = {-1, +1, -1, +1};
+    private final double[] x3n = {-1, +1, +1, -1};
+
     private final double[] x1 = {
             x1n[0] == 1 ? XS_MAX[0] : XS_MIN[0],
             x1n[1] == 1 ? XS_MAX[0] : XS_MIN[0],
-            x1n[2] == 1 ? XS_MAX[0] : XS_MIN[0]};
+            x1n[2] == 1 ? XS_MAX[0] : XS_MIN[0],
+            x1n[3] == 1 ? XS_MAX[0] : XS_MIN[0]
+    };
     private final double[] x2 = {
             x2n[0] == 1 ? XS_MAX[1] : XS_MIN[1],
             x2n[1] == 1 ? XS_MAX[1] : XS_MIN[1],
-            x2n[2] == 1 ? XS_MAX[1] : XS_MIN[1]};
+            x2n[2] == 1 ? XS_MAX[1] : XS_MIN[1],
+            x2n[3] == 1 ? XS_MAX[1] : XS_MIN[1]
+    };
     private final double[] x3 = {
             x3n[0] == 1 ? XS_MAX[2] : XS_MIN[2],
             x3n[1] == 1 ? XS_MAX[2] : XS_MIN[2],
-            x3n[2] == 1 ? XS_MAX[2] : XS_MIN[2]};
+            x3n[2] == 1 ? XS_MAX[2] : XS_MIN[2],
+            x3n[3] == 1 ? XS_MAX[2] : XS_MIN[2]
+    };
 
     private final double Y_MIN = 200 + X_MIN_AVERAGE;
     private final double Y_MAX = 200 + X_MAX_AVERAGE;
@@ -36,6 +42,7 @@ public class Experiment {
     private static final double INFINITY = Double.POSITIVE_INFINITY;
 
     private final int N = 4;
+    private final int k = 3;
 
     // {
     //   (1): [1..m]
@@ -74,10 +81,10 @@ public class Experiment {
         final double[][] ysForExperiments = getYsForExperiments();
 
         // Step 1-2
-        double[] yAverages = calculateAverages(ysForExperiments);
+        final double[] yAverages = calculateAverages(ysForExperiments);
 
         // Step 3
-        double[] dispersions = calculateDispersions(ysForExperiments, yAverages);
+        final double[] dispersions = calculateDispersions(ysForExperiments, yAverages);
 
         // Step 4
         final double maxDispersion = max(dispersions);
@@ -100,11 +107,38 @@ public class Experiment {
     }
 
     private boolean satisfiesStudentCriteria(int m) {
-        double averageDispersion = calculateAverage(calculateDispersions(getYsForExperiments()));
-        double[] dispersions = get
+        // Step 1
+        final double averageDispersion = calculateAverage(calculateDispersions(getYsForExperiments()));
+
+        // Step 2
+        final double dispersionEstimate = Math.sqrt(averageDispersion / (N * m));
+
+        // Step 3
+//        final double[][] xns = {
+//                {x0n[0], x1n[0], x2n[0], x3n[0]},
+//
+//        };
+
+//        calculateAverage(getYsForExperiment(0));
+//        calculateAverage(getYsForExperiment(N - 1));
+//        final double[] betas =
+        return true;
+    }
+
+    private boolean satisfiesFisherCriteria(int m, int d) {
+        final double dispersionOfAdequacy = m / (N - d) *
     }
 
 
+    private double calculateRegression(double[] coeffs, double[] xs) {
+        double result = coeffs[0];
+
+        for (int i = 0; i < xs.length; i++) {
+            result += coeffs[i + 1] * xs[i];
+        }
+
+        return result;
+    }
 
     private double calculateAverage(double[] array) {
         double average = 0.0;
@@ -190,6 +224,27 @@ public class Experiment {
         return sum;
     }
 
+    private double[] zipMul(double[] array1, double[] array2) {
+        double[] result = new double[array1.length];
+
+        for (int i = 0; i < array1.length; i++) {
+            result[i] = array1[i] * array2[i];
+        }
+
+        return result;
+    }
+
+    private double[] mapRegression(double[] coeffs, double[][] xs) {
+        final int size = xs.length;
+        double[] regressions = new double[size];
+
+        for (int i = 0; i < size; i++) {
+            regressions[i] = calculateRegression(coeffs, xs[i]);
+        }
+
+        return regressions;
+    }
+
 
     private void generateNewSample() {
         matrix.add(generateRandomArray(N, Y_MIN, Y_MAX));
@@ -256,9 +311,6 @@ public class Experiment {
     public double getRequiredProbability() {
         return REQUIRED_PROBABILITY;
     }
-
-
-
 
 
     //----------------------------------------------------------------------------------
