@@ -40,6 +40,12 @@ import java.util.Map;
         private final int amountOfColomns = m + 8;
 
         public static void main(String[] args) {
+            Experiment ex = new Experiment(0.99);
+            for (double d : ex.getNormalizedRegressionCoeffs()) {
+                System.out.println(d + " ");
+            }
+
+
             launch(args);
         }
 
@@ -149,7 +155,7 @@ import java.util.Map;
             ObservableList<Map> allData = FXCollections.observableArrayList();
 
             Experiment experimentForVisual = new Experiment(0.99);
-            double[] e = experimentForVisual.getAverageYsForExperiments();
+            double[] e = experimentForVisual.getAveragedYsForExperiments();
             final double[] x1 = experimentForVisual.getX1();
             final double[] x2 = experimentForVisual.getX2();
             final double[] x3 = experimentForVisual.getX3();
@@ -181,7 +187,7 @@ import java.util.Map;
 
                 final double[] ys = experimentForVisual.getYsForExperiment(i);
 
-                for (int j = 4; j < amountOfColomns - 1; j++) {
+                for (int j = 7; j < amountOfColomns - 1; j++) {
                     dataRow.put(MapKeys[j], String.format("%.3f", ys[j - 7]));
                 }
 
