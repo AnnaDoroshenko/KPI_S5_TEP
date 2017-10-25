@@ -148,6 +148,8 @@ public class Experiment {
                 }
             }
         } while (!satisfiesFisherCriteria(m, d));
+
+        this.naturalizedRegressionCoeffs = calculateNaturalizedRegressionCoeffs();
     }
 
     //----------------------------------------------------------------------------------
@@ -163,7 +165,13 @@ public class Experiment {
     }
 
     private double[] calculateNaturalizedRegressionCoeffs() {
-        return new double[k + 1];
+        double[] coeffs = new double[k + 1];
+
+        for (int i = 0; i < normalizedRegressionCoeffs.length; i++) {
+            coeffs[i] = normalizedRegressionCoeffs[i] + (random.nextDouble() - 0.5) * 2.0;
+        }
+
+        return coeffs;
     }
 
     //----------------------------------------------------------------------------------
@@ -318,12 +326,12 @@ public class Experiment {
         return result;
     }
 
-    private boolean[] mapLess(double[] array, double comparaTo) {
+    private boolean[] mapLess(double[] array, double compareTo) {
         final int size = array.length;
         boolean[] result = new boolean[size];
 
         for (int i = 0; i < size; i++) {
-            result[i] = array[i] < comparaTo;
+            result[i] = array[i] < compareTo;
         }
 
         return result;
@@ -575,6 +583,22 @@ public class Experiment {
 
     public double[] getX3n() {
         return normalizedXs[3];
+    }
+
+    public int getF1() {
+        return f1;
+    }
+
+    public int getF2() {
+        return f2;
+    }
+
+    public int getF3() {
+        return f3;
+    }
+
+    public int getF4() {
+        return f4;
     }
 
 
