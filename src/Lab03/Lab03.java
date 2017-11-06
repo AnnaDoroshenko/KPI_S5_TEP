@@ -37,7 +37,7 @@ public class Lab03 extends Application {
     Experiment experiment = new Experiment(0.99);
     private final int N = 4;
     private final int m = experiment.getM();
-    private final int amountOfColomns = m + 7;
+    private final int amountOfColons = m + 7;
 
     public static void main(String[] args) {
         Experiment ex = new Experiment(0.99);
@@ -59,7 +59,7 @@ public class Lab03 extends Application {
         final Label label1 = new Label("Probability: " + experiment.getRequiredProbability());
         label1.setFont(new Font("Times New Roman", 20));
 
-        final String[] MapKeys = new String[amountOfColomns];
+        final String[] MapKeys = new String[amountOfColons];
 
         MapKeys[0] = "ColumnX1";
         MapKeys[1] = "ColumnX2";
@@ -69,11 +69,11 @@ public class Lab03 extends Application {
         MapKeys[5] = "ColumnXn2";
         MapKeys[6] = "ColumnXn3";
 
-        for (int i = 7; i < amountOfColomns - 1; i++) {
+        for (int i = 7; i < amountOfColons - 1; i++) {
             MapKeys[i] = "ColumnY" + i;
         }
 
-        MapKeys[amountOfColomns - 1] = "ColumnYm";
+        MapKeys[amountOfColons - 1] = "ColumnYm";
 
 
         ArrayList<TableColumn<Map, String>> DataColumn = new ArrayList<>();
@@ -86,13 +86,13 @@ public class Lab03 extends Application {
         DataColumn.add(new TableColumn<>("Xn2"));
         DataColumn.add(new TableColumn<>("Xn3"));
 
-        for (int i = 7; i < amountOfColomns - 1; i++) {
+        for (int i = 7; i < amountOfColons - 1; i++) {
             DataColumn.add(new TableColumn<>("Y" + (i - 6)));
         }
 
         DataColumn.add(new TableColumn<>("Ym"));
 
-        for (int i = 0; i < amountOfColomns; i++) {
+        for (int i = 0; i < amountOfColons; i++) {
             DataColumn.get(i).setCellValueFactory(new MapValueFactory(MapKeys[i]));
             DataColumn.get(i).setMinWidth(100);
         }
@@ -118,7 +118,7 @@ public class Lab03 extends Application {
         table_view.getSelectionModel().setCellSelectionEnabled(true);
 
 
-        for (int i = 0; i < amountOfColomns; i++) {
+        for (int i = 0; i < amountOfColons; i++) {
             table_view.getColumns().setAll(DataColumn);
         }
 
@@ -136,7 +136,7 @@ public class Lab03 extends Application {
             }
         });
 
-        for (int i = 0; i < amountOfColomns; i++) {
+        for (int i = 0; i < amountOfColons; i++) {
             DataColumn.get(i).setCellFactory(cellFactoryForMap);
         }
 
@@ -190,11 +190,11 @@ public class Lab03 extends Application {
 
             final double[] ys = experimentForVisual.getYsForExperiment(i);
 
-            for (int j = 7; j < amountOfColomns - 1; j++) {
+            for (int j = 7; j < amountOfColons - 1; j++) {
                 dataRow.put(MapKeys[j], String.format("%.3f", ys[j - 7]));
             }
 
-            dataRow.put(MapKeys[amountOfColomns - 1], ymValue);
+            dataRow.put(MapKeys[amountOfColons - 1], ymValue);
 
             allData.add(dataRow);
         }
