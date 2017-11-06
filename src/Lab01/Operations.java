@@ -1,13 +1,3 @@
-/**
- * Theory of experiment planning
- * Lab 1
- *
- * @variant: 7
- * @authors: Igor Boyarshin, Anna Doroshenko
- * @group: IO-52
- * @date: 27.09.2017
- */
-
 package Lab01;
 
 public class Operations {
