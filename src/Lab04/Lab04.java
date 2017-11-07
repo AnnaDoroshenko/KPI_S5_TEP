@@ -120,7 +120,7 @@ public class Lab04 extends Application {
                 + experiment.getNormalizedRegressionCoeffs()[3] + " * x3");
 
         if (experiment.getNormalizedRegressionCoeffs().length == 4){
-            label3.setText(label3.getText() + " + 0 * x1x2 + 0 * x1x3 + 0 * x2x3 + 0 * x1x2x3");
+            label3.setText(label3.getText() + " + 0.0 * x1x2 + 0.0 * x1x3 + 0.0 * x2x3 + 0.0 * x1x2x3");
         } else {
             label3.setText(label3.getText() + " + " + experiment.getNormalizedRegressionCoeffs()[4] + " * x1x2 + " +
                     experiment.getNormalizedRegressionCoeffs()[5] + " * x1x3 + " +
@@ -135,7 +135,7 @@ public class Lab04 extends Application {
                 + experiment.getNaturalizedRegressionCoeffs()[3] + " * x3");
 
         if (experiment.getNaturalizedRegressionCoeffs().length == 4){
-            label4.setText(label4.getText() + " + 0 * x1x2 + 0 * x1x3 + 0 * x2x3 + 0 * x1x2x3");
+            label4.setText(label4.getText() + " + 0.0 * x1x2 + 0.0 * x1x3 + 0.0 * x2x3 + 0.0 * x1x2x3");
         } else {
             label4.setText(label4.getText() + " + " + experiment.getNaturalizedRegressionCoeffs()[4] + " * x1x2 + " +
                     experiment.getNaturalizedRegressionCoeffs()[5] + " * x1x3 + " +
