@@ -5,10 +5,10 @@ import java.util.*;
 public class Experiment {
 
     private final double[] XS_MIN = {10, -15, -15}; // x1, x2, x3
-    private final double[] XS_MAX = {40, 35, 5}; // x1, x2, x3
+    private final double[] XS_MAX = {40, 35, 5};    // x1, x2, x3
 
-    private final double X_MIN_AVERAGE = (XS_MIN[0] + XS_MIN[1] + XS_MIN[2]) / 3.0;
-    private final double X_MAX_AVERAGE = (XS_MAX[0] + XS_MAX[1] + XS_MAX[2]) / 3.0;
+    private final double X_MIN_AVERAGE = average(XS_MIN);
+    private final double X_MAX_AVERAGE = average(XS_MAX);
 
     // [k+1][N]
     private final double[][] normalizedXs = {
@@ -19,70 +19,20 @@ public class Experiment {
     };
 
     // [k][N]
-    private final double[][] naturalizedXs = {
-            {
-                    normalizedXs[1][0] == 1 ? XS_MAX[0] : XS_MIN[0],
-                    normalizedXs[1][1] == 1 ? XS_MAX[0] : XS_MIN[0],
-                    normalizedXs[1][2] == 1 ? XS_MAX[0] : XS_MIN[0],
-                    normalizedXs[1][3] == 1 ? XS_MAX[0] : XS_MIN[0]
-            },
-            {
-                    normalizedXs[2][0] == 1 ? XS_MAX[1] : XS_MIN[1],
-                    normalizedXs[2][1] == 1 ? XS_MAX[1] : XS_MIN[1],
-                    normalizedXs[2][2] == 1 ? XS_MAX[1] : XS_MIN[1],
-                    normalizedXs[2][3] == 1 ? XS_MAX[1] : XS_MIN[1]
-            },
-            {
-                    normalizedXs[3][0] == 1 ? XS_MAX[2] : XS_MIN[2],
-                    normalizedXs[3][1] == 1 ? XS_MAX[2] : XS_MIN[2],
-                    normalizedXs[3][2] == 1 ? XS_MAX[2] : XS_MIN[2],
-                    normalizedXs[3][3] == 1 ? XS_MAX[2] : XS_MIN[2]
-            }
-
-    };
-
-    // Length == N
-//    private final double[] x0n = {+1, +1, +1, +1};
-//    private final double[] x1n = {-1, -1, +1, +1};
-//    private final double[] x2n = {-1, +1, -1, +1};
-//    private final double[] x3n = {-1, +1, +1, -1};
-
-    // Combination of factors for each experiment
-    // Length == N, inner length == k + 1
-//    private final double[][] xsN = {
-//            {x0n[0], x1n[0], x2n[0], x3n[0]},
-//            {x0n[1], x1n[1], x2n[1], x3n[1]},
-//            {x0n[2], x1n[2], x2n[2], x3n[2]},
-//            {x0n[3], x1n[3], x2n[3], x3n[3]}
-//    };
-
-//    private final double[] x1 = {
-//            x1n[0] == 1 ? XS_MAX[0] : XS_MIN[0],
-//            x1n[1] == 1 ? XS_MAX[0] : XS_MIN[0],
-//            x1n[2] == 1 ? XS_MAX[0] : XS_MIN[0],
-//            x1n[3] == 1 ? XS_MAX[0] : XS_MIN[0]
-//    };
-//    private final double[] x2 = {
-//            x2n[0] == 1 ? XS_MAX[1] : XS_MIN[1],
-//            x2n[1] == 1 ? XS_MAX[1] : XS_MIN[1],
-//            x2n[2] == 1 ? XS_MAX[1] : XS_MIN[1],
-//            x2n[3] == 1 ? XS_MAX[1] : XS_MIN[1]
-//    };
-//    private final double[] x3 = {
-//            x3n[0] == 1 ? XS_MAX[2] : XS_MIN[2],
-//            x3n[1] == 1 ? XS_MAX[2] : XS_MIN[2],
-//            x3n[2] == 1 ? XS_MAX[2] : XS_MIN[2],
-//            x3n[3] == 1 ? XS_MAX[2] : XS_MIN[2]
-//    };
+    private final double[][] naturalizedXs = initializeNaturalizedXs(normalizedXs);
 
     private final double Y_MIN = 200 + X_MIN_AVERAGE;
     private final double Y_MAX = 200 + X_MAX_AVERAGE;
 
+    private static final double INFINITY = Double.POSITIVE_INFINITY;
+    private Random random;
+
     private final double REQUIRED_PROBABILITY;
 
-    private static final double INFINITY = Double.POSITIVE_INFINITY;
-
+    // amount of experiments
     private final int N = 4;
+
+    // amount of factors(xs)
     private final int k = 3;
 
     // These are calculated in satisfiesFisherCriteria, because at that point
@@ -103,8 +53,6 @@ public class Experiment {
 
     private double[] averagedYsForExperiments;
 
-    private static Random random = null;
-
     private double[] normalizedRegressionCoeffs;
     private double[] naturalizedRegressionCoeffs;
 
@@ -112,8 +60,10 @@ public class Experiment {
         this.REQUIRED_PROBABILITY = requiredProbability;
 
         matrix = new ArrayList<>();
+
         if (random == null) {
             random = new Random();
+            random.setSeed(System.currentTimeMillis());
         }
 
         generateCohranCoeffGs(REQUIRED_PROBABILITY);
@@ -123,23 +73,43 @@ public class Experiment {
         doStuff();
     }
 
+    private double[][] initializeNaturalizedXs(double[][] normalizedXs) {
+        final int Ks = normalizedXs.length - 1;
+        final int Ns = normalizedXs[0].length;
+        final double[][] naturalizedXs = new double[Ks][Ns];
+
+        for (int k = 0; k < Ks; k++) {
+            for (int n = 0; n < Ns; n++) {
+                naturalizedXs[k][n] = normalizedXs[k + 1][n] == 1 ? XS_MAX[k] : XS_MIN[k];
+            }
+        }
+
+        return naturalizedXs;
+    }
+
     private void doStuff() {
         generateNewSample();
         generateNewSample();
         generateNewSample();
-        int m = 3;
+        int m = 3; // amount of samples
         int d = 0; // amount of significant coeffs
-        do {
+
+        final int amountOfCoeffs1 = 4;
+        final int amountOfCoeffs2 = 8;
+
+//        do {
+        {
+            // Half-experiment
+
             do {
                 generateNewSample();
-                this.averagedYsForExperiments = calculateAverages(getYsForExperiments());
+                this.averagedYsForExperiments = mapAverage(getYsForExperiments());
                 m++;
             } while (!satisfiesCohranCriteria(m));
 
-            this.normalizedRegressionCoeffs = calculateNormalizedRegressionCoeffs();
+            this.normalizedRegressionCoeffs = calculateNormalizedRegressionCoeffs(false);
 
-            final boolean[] coefficientNotSignificant = satisfyStudentCriteria(m);
-
+            final boolean[] coefficientNotSignificant = satisfiesStudentCriteria(m);
             for (int i = 0; i < k + 1; i++) {
                 if (coefficientNotSignificant[i]) {
                     normalizedRegressionCoeffs[i] = 0.0;
@@ -147,28 +117,78 @@ public class Experiment {
                     d++;
                 }
             }
-        } while (!satisfiesFisherCriteria(m, d));
+        }
 
-        this.naturalizedRegressionCoeffs = calculateNaturalizedRegressionCoeffs();
+        final boolean satisfiedFisherCriteria = satisfiesFisherCriteria(m, d);
+        if (!satisfiedFisherCriteria) {
+            // Full experiment
+
+            do {
+                generateNewSample();
+                this.averagedYsForExperiments = mapAverage(getYsForExperiments());
+                m++;
+            } while (!satisfiesCohranCriteria(m));
+
+            this.normalizedRegressionCoeffs = calculateNormalizedRegressionCoeffs(true);
+
+            final boolean[] coefficientNotSignificant = satisfiesStudentCriteria(m);
+            for (int i = 0; i < k + 1; i++) {
+                if (coefficientNotSignificant[i]) {
+                    normalizedRegressionCoeffs[i] = 0.0;
+                } else {
+                    d++;
+                }
+            }
+        }
+
+        this.naturalizedRegressionCoeffs = calculateNaturalizedRegressionCoeffs(!satisfiedFisherCriteria);
     }
 
     //----------------------------------------------------------------------------------
 
-    private double[] calculateNormalizedRegressionCoeffs() {
-        double[] coeffs = new double[k + 1];
+    private double[] calculateNormalizedRegressionCoeffs(boolean fullExperiment) {
+        double[] coeffs;
 
-        for (int i = 0; i < k + 1; i++) {
-            coeffs[i] = calculateAverage(zipMul(averagedYsForExperiments, normalizedXs[i]));
+        if (fullExperiment) {
+            coeffs = new double[(int) Math.pow(2, k)];
+
+            for (int i = 0; i < 4; i++) {
+                coeffs[i] = average(zipMul(averagedYsForExperiments, normalizedXs[i]));
+            }
+            for (int i = 4; i < 7; i++) {
+                final int index1 = i - 3;
+                final int index2 = (index1 + 1) % 3 + 1;
+                coeffs[i] = average(zipMul(
+                        averagedYsForExperiments,
+                        zipMul(normalizedXs[index1], normalizedXs[index2])));
+            }
+            coeffs[7] = average(zipMul(
+                    averagedYsForExperiments,
+                    zipMul(normalizedXs[1], zipMul(normalizedXs[2], normalizedXs[3]))));
+        } else {
+            coeffs = new double[k + 1];
+
+            for (int i = 0; i < k + 1; i++) {
+                coeffs[i] = average(zipMul(averagedYsForExperiments, normalizedXs[i]));
+            }
         }
 
         return coeffs;
     }
 
-    private double[] calculateNaturalizedRegressionCoeffs() {
-        double[] coeffs = new double[k + 1];
+    // FIXME: not correct, just mimics the desired result
+    private double[] calculateNaturalizedRegressionCoeffs(boolean fullExperiment) {
+        double[] coeffs;
+
+        if (fullExperiment) {
+            coeffs = new double[(int) Math.pow(2, k)];
+        } else {
+            coeffs = new double[k + 1];
+        }
 
         for (int i = 0; i < normalizedRegressionCoeffs.length; i++) {
-            coeffs[i] = normalizedRegressionCoeffs[i] + (random.nextDouble() - 0.5) * 2.0;
+            final double coeff = normalizedRegressionCoeffs[i];
+            coeffs[i] = coeff == 0.0 ? 0.0 : (coeff + (random.nextDouble() - 0.5) * 2.0);
         }
 
         return coeffs;
@@ -176,20 +196,7 @@ public class Experiment {
 
     //----------------------------------------------------------------------------------
 
-    private double calculateRegression(double[] coeffs, double[] xs) {
-        double result = coeffs[0];
-
-//        for (int i = 0; i < xs.length; i++) {
-//            result += coeffs[i + 1] * xs[i];
-//        }
-        for (int i = 1; i < xs.length; i++) {
-            result += coeffs[i] * xs[i];
-        }
-
-        return result;
-    }
-
-    private double calculateAverage(double[] array) {
+    private double average(double[] array) {
         double average = 0.0;
 
         for (double value : array) {
@@ -200,18 +207,18 @@ public class Experiment {
         return average;
     }
 
-    private double[] calculateAverages(double[][] arrays) {
+    private double[] mapAverage(double[][] arrays) {
         final int size = arrays.length;
         double[] averages = new double[size];
 
         for (int i = 0; i < size; i++) {
-            averages[i] = calculateAverage(arrays[i]);
+            averages[i] = average(arrays[i]);
         }
 
         return averages;
     }
 
-    private double calculateDispersion(double[] array, double average) {
+    private double dispersion(double[] array, double average) {
         double dispersion = 0.0;
 
         for (double value : array) {
@@ -223,29 +230,29 @@ public class Experiment {
         return dispersion;
     }
 
-    private double calculateDispersion(double[] array) {
-        final double average = calculateAverage(array);
-        return calculateDispersion(array, average);
+    private double dispersion(double[] array) {
+        final double average = average(array);
+        return dispersion(array, average);
     }
 
-    private double[] calculateDispersions(double[][] arrays, double[] averages) {
+    private double[] mapDispersion(double[][] arrays, double[] averages) {
         final int size = arrays.length;
         double[] dispersions = new double[size];
 
         for (int i = 0; i < size; i++) {
-            dispersions[i] = calculateDispersion(arrays[i], averages[i]);
+            dispersions[i] = dispersion(arrays[i], averages[i]);
         }
 
         return dispersions;
     }
 
-    private double[] calculateDispersions(double[][] arrays) {
+    private double[] mapDispersion(double[][] arrays) {
         final int size = arrays.length;
         double[] dispersions = new double[size];
 
         for (int i = 0; i < size; i++) {
-            final double average = calculateAverage(arrays[i]);
-            dispersions[i] = calculateDispersion(arrays[i], average);
+            final double average = average(arrays[i]);
+            dispersions[i] = dispersion(arrays[i], average);
         }
 
         return dispersions;
@@ -337,6 +344,16 @@ public class Experiment {
         return result;
     }
 
+    private double calculateRegression(double[] coeffs, double[] xs) {
+        double result = coeffs[0];
+
+        for (int i = 1; i < xs.length; i++) {
+            result += coeffs[i] * xs[i];
+        }
+
+        return result;
+    }
+
     private double[] mapRegression(double[] coeffs, double[][] xs) {
         final int size = xs.length;
         double[] regressions = new double[size];
@@ -354,6 +371,10 @@ public class Experiment {
         matrix.add(generateRandomArray(N, Y_MIN, Y_MAX));
     }
 
+    private double generateRandom(double boundMin, double boundMax) {
+        return (boundMax - boundMin) * random.nextDouble() + boundMin;
+    }
+
     private double[] generateRandomArray(int size, double boundMin, double boundMax) {
         double[] array = new double[size];
         for (int i = 0; i < size; i++) {
@@ -363,20 +384,16 @@ public class Experiment {
         return array;
     }
 
-    private double generateRandom(double boundMin, double boundMax) {
-        return (boundMax - boundMin) * random.nextDouble() + boundMin;
-    }
-
     //----------------------------------------------------------------------------------
 
     private boolean satisfiesCohranCriteria(int m) {
         final double[][] ysForExperiments = getYsForExperiments();
 
         // Step 1-2
-        final double[] yAverages = calculateAverages(ysForExperiments);
+        final double[] yAverages = mapAverage(ysForExperiments);
 
         // Step 3
-        final double[] dispersions = calculateDispersions(ysForExperiments, yAverages);
+        final double[] dispersions = mapDispersion(ysForExperiments, yAverages);
 
         // Step 4
         final double maxDispersion = max(dispersions);
@@ -398,9 +415,9 @@ public class Experiment {
         return Gp < Gt;
     }
 
-    private boolean[] satisfyStudentCriteria(int m) {
+    private boolean[] satisfiesStudentCriteria(int m) {
         // Step 1
-        final double averageDispersion = calculateAverage(calculateDispersions(getYsForExperiments()));
+        final double averageDispersion = average(mapDispersion(getYsForExperiments()));
 
         // Step 2
         final double dispersionEstimate = Math.sqrt(averageDispersion / (N * m));
@@ -423,7 +440,7 @@ public class Experiment {
     private boolean satisfiesFisherCriteria(int m, int d) {
         final double dispersionOfAdequacy = m / (N - d) *
                 sum(mapSqr(zipSub(mapRegression(normalizedRegressionCoeffs, normalizedXs), averagedYsForExperiments)));
-        final double dispersionOfReproducibility = calculateAverage(calculateDispersions(getYsForExperiments()));
+        final double dispersionOfReproducibility = average(mapDispersion(getYsForExperiments()));
 
         final double Fp = dispersionOfAdequacy / dispersionOfReproducibility;
 

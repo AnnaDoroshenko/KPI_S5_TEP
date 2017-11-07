@@ -41,10 +41,10 @@ public class Lab04 extends Application {
     private final int amountOfColons = m + 13;
 
     public static void main(String[] args) {
-        Experiment ex = new Experiment(0.99);
-        for (double d : ex.getNormalizedRegressionCoeffs()) {
-            System.out.println(d + " ");
-        }
+//        Experiment ex = new Experiment(0.99);
+//        for (double d : ex.getNormalizedRegressionCoeffs()) {
+//            System.out.println(d + " ");
+//        }
 
 
         launch(args);
