@@ -118,11 +118,31 @@ public class Lab04 extends Application {
         final Label label3 = new Label("Normalized regression: y = " + experiment.getNormalizedRegressionCoeffs()[0] + " + " +
                 experiment.getNormalizedRegressionCoeffs()[1] + " * x1 + " + experiment.getNormalizedRegressionCoeffs()[2] + " * x2 + "
                 + experiment.getNormalizedRegressionCoeffs()[3] + " * x3");
+
+        if (experiment.getNormalizedRegressionCoeffs().length == 4){
+            label3.setText(label3.getText() + " + 0 * x1x2 + 0 * x1x3 + 0 * x2x3 + 0 * x1x2x3");
+        } else {
+            label3.setText(label3.getText() + " + " + experiment.getNormalizedRegressionCoeffs()[4] + " * x1x2 + " +
+                    experiment.getNormalizedRegressionCoeffs()[5] + " * x1x3 + " +
+                    experiment.getNormalizedRegressionCoeffs()[6] + " * x2x3 + " +
+                    experiment.getNormalizedRegressionCoeffs()[7] + " * x1x2x3");
+        }
+
         label3.setFont(new Font("Times New Roman", 20));
 
         final Label label4 = new Label("Natural regression: y = " + experiment.getNaturalizedRegressionCoeffs()[0] + " + " +
                 experiment.getNaturalizedRegressionCoeffs()[1] + " * x1 + " + experiment.getNaturalizedRegressionCoeffs()[2] + " * x2 + "
                 + experiment.getNaturalizedRegressionCoeffs()[3] + " * x3");
+
+        if (experiment.getNaturalizedRegressionCoeffs().length == 4){
+            label4.setText(label4.getText() + " + 0 * x1x2 + 0 * x1x3 + 0 * x2x3 + 0 * x1x2x3");
+        } else {
+            label4.setText(label4.getText() + " + " + experiment.getNaturalizedRegressionCoeffs()[4] + " * x1x2 + " +
+                    experiment.getNaturalizedRegressionCoeffs()[5] + " * x1x3 + " +
+                    experiment.getNaturalizedRegressionCoeffs()[6] + " * x2x3 + " +
+                    experiment.getNaturalizedRegressionCoeffs()[7] + " * x1x2x3");
+        }
+
         label4.setFont(new Font("Times New Roman", 20));
 
         table_view.setEditable(true);
@@ -169,7 +189,8 @@ public class Lab04 extends Application {
         ObservableList<Map> allData = FXCollections.observableArrayList();
 
         Experiment experimentForVisual = new Experiment(0.99);
-        double[] e = experimentForVisual.getAveragedYsForExperiments();
+        double[] averagedYs = experimentForVisual.getAveragedYsForExperiments();
+        double[] dispersionsOfYs = experimentForVisual.getDispersionsOfYs();
         final double[] x1 = experimentForVisual.getX1();
         final double[] x2 = experimentForVisual.getX2();
         final double[] x3 = experimentForVisual.getX3();
@@ -177,10 +198,10 @@ public class Lab04 extends Application {
         final double[] x1n = experimentForVisual.getX1n();
         final double[] x2n = experimentForVisual.getX2n();
         final double[] x3n = experimentForVisual.getX3n();
-        final double[] x1nx2n = experimentForVisual.getX3n();
-        final double[] x1nx3n = experimentForVisual.getX3n();
-        final double[] x2nx3n = experimentForVisual.getX3n();
-        final double[] x1nx2nx3n = experimentForVisual.getX3n();
+        final double[] x1nx2n = experimentForVisual.getX1nX2n();
+        final double[] x1nx3n = experimentForVisual.getX1nX3n();
+        final double[] x2nx3n = experimentForVisual.getX2nX3n();
+        final double[] x1nx2nx3n = experimentForVisual.getX1nX2nX3n();
 
 
         for (int i = 0; i < N; i++) {
@@ -197,8 +218,8 @@ public class Lab04 extends Application {
             String x1nx3nValue = String.format("%.3f", x1nx3n[i]);
             String x2nx3nValue = String.format("%.3f", x2nx3n[i]);
             String x1nx2nx3nValue = String.format("%.3f", x1nx2nx3n[i]);
-            String ymValue = String.format("%.3f", e[i]);
-            String dispersionValue = String.format("%.3f", e[i]);
+            String ymValue = String.format("%.3f", averagedYs[i]);
+            String dispersionValue = String.format("%.3f", dispersionsOfYs[i]);
 
             dataRow.put(MapKeys[0], x1Value);
             dataRow.put(MapKeys[1], x2Value);

@@ -562,6 +562,10 @@ public class Experiment {
         return averagedYsForExperiments;
     }
 
+    public double[] getDispersionsOfYs() {
+        return mapDispersion(getYsForExperiments());
+    }
+
     public double getRequiredProbability() {
         return REQUIRED_PROBABILITY;
     }
@@ -600,6 +604,22 @@ public class Experiment {
 
     public double[] getX3n() {
         return normalizedXs[3];
+    }
+
+    public double[] getX1nX2n() {
+        return zipMul(normalizedXs[1], normalizedXs[2]);
+    }
+
+    public double[] getX1nX3n() {
+        return zipMul(normalizedXs[1], normalizedXs[3]);
+    }
+
+    public double[] getX2nX3n() {
+        return zipMul(normalizedXs[2], normalizedXs[3]);
+    }
+
+    public double[] getX1nX2nX3n() {
+        return zipMul(zipMul(normalizedXs[1], normalizedXs[2]), normalizedXs[3]);
     }
 
     public int getF1() {
