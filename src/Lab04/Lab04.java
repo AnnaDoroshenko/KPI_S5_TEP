@@ -128,11 +128,12 @@ public class Lab04 extends Application {
                     experiment.getNormalizedRegressionCoeffs()[7] + " * x1x2x3");
         }
 
-        label3.setFont(new Font("Times New Roman", 20));
+        label3.setFont(new Font("Times New Roman", 14));
 
         final Label label4 = new Label("Natural regression: y = " + experiment.getNaturalizedRegressionCoeffs()[0] + " + " +
                 experiment.getNaturalizedRegressionCoeffs()[1] + " * x1 + " + experiment.getNaturalizedRegressionCoeffs()[2] + " * x2 + "
                 + experiment.getNaturalizedRegressionCoeffs()[3] + " * x3");
+//        label4.setFont(new Font(8));
 
         if (experiment.getNaturalizedRegressionCoeffs().length == 4){
             label4.setText(label4.getText() + " + 0.0 * x1x2 + 0.0 * x1x3 + 0.0 * x2x3 + 0.0 * x1x2x3");
@@ -143,7 +144,7 @@ public class Lab04 extends Application {
                     experiment.getNaturalizedRegressionCoeffs()[7] + " * x1x2x3");
         }
 
-        label4.setFont(new Font("Times New Roman", 20));
+        label4.setFont(new Font("Times New Roman", 14));
 
         table_view.setEditable(true);
         table_view.getSelectionModel().setCellSelectionEnabled(true);

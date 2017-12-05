@@ -732,7 +732,7 @@ public class Experiment {
 
     private double getStudentCoeff(int f3, double q) {
 //        return studentCoeffTs.get(1.0 * f3).get(q);
-        return studentCoeffTs.get(1.0 * f3).get(0.01);
+        return studentCoeffTs.get(1.0 * f3).get(0.01) / 3.0;
     }
 
     // TODO: zip?
